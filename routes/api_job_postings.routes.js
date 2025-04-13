@@ -14,7 +14,6 @@ const {
   completeJob,
   deleteJobBid,
   rateFixer,
-  fetchActiveJobPostingsByUserId,
 } = require("../handlers/api_job_posting.handlers");
 const { authenticateToken } = require("../middleware/auth");
 
