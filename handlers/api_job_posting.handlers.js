@@ -652,5 +652,4 @@ module.exports = {
   completeJob,
   deleteJobBid,
   rateFixer,
-  fetchActiveJobPostingsByUserId,
 };
