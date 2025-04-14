@@ -204,6 +204,8 @@ async function updateUserProfileImpl(req, res) {
       graduationYear,
       previousRole,
       duration,
+      newPassword, 
+      profilePicture, 
     } = req.body;
 
     // Fetch existing user
@@ -212,11 +214,13 @@ async function updateUserProfileImpl(req, res) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    let newProfilePictureUrl = existingUser.profilePicture; // Default to existing image
+    let newProfilePictureUrl = profilePicture || null; 
 
-    // If the frontend sends a new image URL, update it
-    if (req.body.profilePicture) {
-      newProfilePictureUrl = req.body.profilePicture;
+    // Hash the new password if provided
+    let hashedPassword = existingUser.password;
+    if (newPassword) {
+      const saltRounds = 10;
+      hashedPassword = await bcrypt.hash(newPassword, saltRounds);
     }
 
     // Prepare update object
@@ -233,7 +237,8 @@ async function updateUserProfileImpl(req, res) {
       graduationYear: graduationYear || null,
       previousRole,
       duration,
-      profilePicture: newProfilePictureUrl, // Store Cloudinary URL
+      profilePicture: newProfilePictureUrl, 
+      password: hashedPassword,
     };
 
     console.log(updates);
