@@ -23,6 +23,32 @@ const savePrivateMessage = async (req, res) => {
   }
 };
 
+const getChatRoom = async (req, res) => {
+  const { user1_id, user2_id } = req.query;
+
+  if (!user1_id || !user2_id) {
+    return res.status(400).json({ error: "Missing user IDs" });
+  }
+
+  // Always sort user IDs to ensure consistent room_id pairing
+  const [id1, id2] = [parseInt(user1_id), parseInt(user2_id)].sort((a, b) => a - b);
+
+  try {
+    const [rows] = await db
+      .promise()
+      .query("SELECT id FROM chat_rooms WHERE user1_id = ? AND user2_id = ?", [id1, id2]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "Chat room not found" });
+    }
+
+    return res.status(200).json({ room_id: rows[0].id });
+  } catch (err) {
+    console.error("❌ Error fetching room ID:", err);
+    return res.status(500).json({ error: "Server error" });
+  }
+};
+
 const getUserChats = async (req, res) => {
   const { user_id } = req.params;
 
@@ -97,7 +123,8 @@ const fetchChatHistory = async (req, res) => {
   module.exports = {
     savePrivateMessage,
     fetchChatHistory,
-    getUserChats
+    getUserChats,
+    getChatRoom
   };
   
 

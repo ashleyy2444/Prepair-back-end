@@ -59,7 +59,7 @@ io.on("connection", (socket) => {
   
     try {
       // Send POST request to your API route
-      await axios.post("http://localhost:5001/api/save-message", {
+      await axios.post("http://localhost:5001/api/chat/save-message", {
         room_id: room,
         sender_id: senderId,
         recipient_id: recipientId,
@@ -84,7 +84,8 @@ app.get("/", (req, res) => {
 });
 
 const PORT = process.env.PORT || 5001; // Start the combined Express + Socket.IO server
-app.listen(PORT, async () => {
-  console.log(`Server running on port ${PORT}`);
+server.listen(PORT, async () => {
+  console.log(`✅ Server + WebSocket running on port ${PORT}`);
   await startUp();
 });
+
