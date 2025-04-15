@@ -1,57 +1,68 @@
 # Project Setup Guide
 
+This guide outlines the steps to install, configure, and run the backend server for the **Prepair** web application.
+
+---
+
+## Prerequisites
+
+Ensure the following are installed on your local development environment:
+
+- [Node.js](https://nodejs.org/) (v14 or higher)
+- [MySQL](https://www.mysql.com/)
+- npm (included with Node.js)
+
+---
+
 ## 1. Install Dependencies
 
-Run the following command to install the required dependencies:
+Navigate to the root directory of the backend project and run:
 
 ```bash
 npm install
 ```
+This installs all required packages listed in `package.json`.
 
-## 2. Create `.env` File
+## 2. Environment Configuration
 
 Create a `.env` file in the root directory and add the following environment variables:
 
 ```bash
-DB_HOST=hopper.proxy.rlwy.net
+# Database Configuration
+DB_HOST=localhost
 DB_USER=root
-DB_PASSWORD=YQqZXlERsVVwTDySkhSeUeBFFRHFTpWY
-DB_NAME=railway
-DB_PORT=31432
+DB_PASSWORD=your_password
+DB_NAME=prepair_db
+DB_PORT=3306
+
+# Server Port
 PORT=5001
-JWT_SECRET=your-strong-secret-key
 
-EMAIL_HOST= "Your email host", eg: "smtp.gmail.com"
+# JWT Secret Key
+JWT_SECRET=your_strong_jwt_secret
+
+# Email Configuration
+EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=465
-EMAIL_USER="your email address"
-EMAIL_PASS="your email app password (Login to your email and go to create new app password in settings)"
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_app_specific_password
+```
+Note: For Gmail accounts, an App Password must be generated and used in place of your standard email password.
+
+## 3. Setup MySQL Database
+
+To initialise the database schema, run the following command:
+
+```
+mysql -u your_username -p < path/to/localSchema.sql
 ```
 
-## 3. Setup Database
+## 4. Start the Backend Server
 
-Run the schema.sql script to create the required tables in your MySQL database:
-
-```
-mysql -u your_username -p < path/to/schema.sql
-```
-
-## 4. Start the server
-
-To start the backend server, run the following command:
+Once your environment variables are configured and database is set up, start the server:
 
 ```
 node index.js
 ```
-
-Open
-https://prepair-back-end.onrender.com/ to see the results
-
-## Production (Railway) Database
-
-The project is hosted on [Railway](https://railway.app). The backend connects to a hosted MySQL instance via environment variables.
-
-To access the Railway DB:
-
-```bash
-mysql -h hopper.proxy.rlwy.net -u root -p --port 31432
-```
+By default, the backend will be available at:  
+http://localhost:5001
