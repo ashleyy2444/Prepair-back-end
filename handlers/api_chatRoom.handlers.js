@@ -2,26 +2,29 @@ const { db } = require("../lib/database");
 
 const createChatRoom = async (req, res) => {
   try {
-    const { user1Id, user2Id } = req.body;
-    const roomId = [user1Id, user2Id].sort().join("-");
+    const { user1_id, user2_id } = req.body;
+    const roomId = [user1_id, user2_id].sort().join("-");
 
     // Check if room already exists
-    const [existing] = await db.promise().query(
-      `SELECT * FROM chat_rooms WHERE room_id = ?`,
-      [roomId]
-    );
+    const [existing] = await db
+      .promise()
+      .query(`SELECT * FROM chat_rooms WHERE room_id = ?`, [roomId]);
 
     if (existing.length === 0) {
-      await db.promise().query(
-        `INSERT INTO chat_rooms (room_id, user1_id, user2_id) VALUES (?, ?, ?)`,
-        [roomId, user1Id, user2Id]
-      );
+      await db
+        .promise()
+        .query(
+          `INSERT INTO chat_rooms (room_id, user1_id, user2_id) VALUES (?, ?, ?)`,
+          [roomId, user1_id, user2_id]
+        );
     }
 
     return res.status(201).json({ success: true, roomId });
   } catch (error) {
     console.error("❌ Error creating room:", error);
-    return res.status(500).json({ success: false, error: "Failed to create room" });
+    return res
+      .status(500)
+      .json({ success: false, error: "Failed to create room" });
   }
 };
 
@@ -66,9 +69,5 @@ const getChatList = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch chat list" });
   }
 };
-
-
-
-
 
 module.exports = { createChatRoom, getChatList };
