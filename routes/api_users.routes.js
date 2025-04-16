@@ -13,7 +13,7 @@ const {
   verifyOtp,
   resetPassword,
   validateTargetUser,
-  getAllFixers
+  getAllFixers,
 } = require("../handlers/api_users.handlers");
 
 // Middleware for authentication
@@ -39,5 +39,6 @@ router.post("/reset-password", resetPassword);
 router.get("/users/validate/:targetId", validateTargetUser);
 router.get("/fixers", getAllFixers);
 router.get("/fixers/:userId", getUserProfile); // Reuse existing profile logic
+router.get("/users/:userId", getUserProfile); // ✅ Add this line
 
 module.exports = router;
