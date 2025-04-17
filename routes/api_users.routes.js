@@ -14,6 +14,7 @@ const {
   resetPassword,
   validateTargetUser,
   getAllFixers,
+  getFixerWithRating
 } = require("../handlers/api_users.handlers");
 
 // Middleware for authentication
@@ -37,6 +38,7 @@ router.post("/forgot-password", sendOTPToEmail);
 router.post("/verifyOtp", verifyOtp);
 router.post("/reset-password", resetPassword);
 router.get("/users/validate/:targetId", validateTargetUser);
+router.get("/fixers/:userId", getFixerWithRating);
 router.get("/fixers", getAllFixers);
 router.get("/fixers/:userId", getUserProfile); // Reuse existing profile logic
 router.get("/users/:userId", getUserProfile); // ✅ Add this line
