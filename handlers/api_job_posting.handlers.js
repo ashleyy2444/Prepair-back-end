@@ -115,7 +115,6 @@ const fetchJobPosting = async (req, res) => {
 };
 
 const fetchJobPostingByUserId = async (req, res) => {
-  //PY image here
   try {
     const { userId } = req.params;
 
@@ -137,9 +136,11 @@ const fetchJobPostingByUserId = async (req, res) => {
 
     console.log(results);
 
-    // results.forEach((job) => {
-    //   job.images = job.images ? JSON.parse(job.images) : [];
-    // });
+    results.forEach((job) => {
+      if (!Array.isArray(job.images)) {
+        job.images = [];
+      }
+    });
 
     if (!results.length) {
       console.warn(`\u26a0\ufe0f No job postings found for User ID: ${userId}`);
@@ -258,7 +259,6 @@ const fetchJobBids = async (req, res) => {
 };
 
 const fetchActiveBidsForFixer = async (req, res) => {
-  //PY image here
   try {
     const { fixer_id } = req.query; // Extract fixer_id from the query parameters
 
@@ -280,6 +280,11 @@ const fetchActiveBidsForFixer = async (req, res) => {
     `;
 
     const [results] = await db.promise().query(query, [fixer_id]);
+    results.forEach((job) => {
+      if (!Array.isArray(job.images)) {
+        job.images = [];
+      }
+    });
 
     if (!results.length) {
       console.warn(`⚠️ No active bids found for Fixer ID: ${fixer_id}`);
