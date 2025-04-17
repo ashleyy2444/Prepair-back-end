@@ -393,6 +393,37 @@ async function getAllFixers(req, res) {
   }
 }
 
+async function getFixerWithRating(req, res) {
+  const fixerId = req.params.userId;
+
+  try {
+    const [fixerResult] = await db
+      .promise()
+      .query("SELECT * FROM users WHERE id = ?", [fixerId]);
+
+    if (fixerResult.length === 0) {
+      return res.status(404).json({ message: "Fixer not found" });
+    }
+
+    const fixer = fixerResult[0];
+
+    const [reviews] = await db
+      .promise()
+      .query(
+        "SELECT AVG(rating) as avgRating, COUNT(*) as reviewCount FROM reviews WHERE fixer_id = ?",
+        [fixerId]
+      );
+
+    fixer.avgRating = reviews[0].avgRating ? Number(reviews[0].avgRating).toFixed(1) : null;
+    fixer.reviewCount = reviews[0].reviewCount || 0;
+
+    res.json(fixer);
+  } catch (error) {
+    console.error("Error fetching fixer with rating:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
 
 // Export all functions
 module.exports = {
@@ -408,5 +439,6 @@ module.exports = {
   updateUserProfileImpl,
   validateTargetUser,
   startUp,
-  getAllFixers
+  getAllFixers,
+  getFixerWithRating
 };
