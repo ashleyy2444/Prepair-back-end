@@ -271,7 +271,7 @@ const fetchActiveBidsForFixer = async (req, res) => {
 
     // Fetch active job bids with status 'pending' for the given fixer_id
     const query = `
-      SELECT j.id, j.description, 
+      SELECT j.id, j.description, j.date,
              jb.status, jb.created_at, j.title, j.location, j.urgency, j.min_budget, j.max_budget
       FROM job_bids jb
       JOIN job_postings j ON jb.job_posting_id = j.id
@@ -491,24 +491,11 @@ const completeJob = async (req, res) => {
       WHERE id = ?`;
     await db.promise().query(updateJobStatusQuery, [jobId]);
 
-    const [rows] = await db
-      .promise()
-      .query(`SELECT job_posting_id, fixer_id FROM job_bids WHERE id = ?`, [
-        bidId,
-      ]);
-
-    if (rows.length === 0) {
-      return res.status(404).json({ error: "Bid not found." });
-    }
-
-    const { job_posting_id, fixer_id } = rows[0];
-
-    const insertCompletedJobQuery = `
-      INSERT INTO completed_jobs (job_posting_id, fixer_id)
-      VALUES (?, ?)`;
-    await db
-      .promise()
-      .query(insertCompletedJobQuery, [job_posting_id, fixer_id]);
+    const updateBidQuery = `
+    UPDATE job_bids 
+    SET status = 'completed' 
+    WHERE id = ? AND job_posting_id = ?`;
+    await db.promise().query(updateBidQuery, [bidId, jobId]);
 
     res.status(200).json({ message: "Job completed." });
   } catch (err) {
@@ -535,51 +522,6 @@ const deleteJobBid = async (req, res) => {
     res.status(500).json({ error: "Server error while trying to delete job" });
   }
 };
-
-// old codes
-// const fetchActiveJobPostingsByUserId = async (req, res) => {
-//   try {
-//     const { userId } = req.params;
-
-//     console.log(`📱 Fetching ACTIVE Job Postings for User ID: ${userId}`);
-
-//     if (!userId || isNaN(parseInt(userId, 10))) {
-//       return res.status(400).json({ error: "Invalid user ID." });
-//     }
-
-//     const query = `
-//       SELECT
-//         jp.*,
-//         jb.id AS accepted_bid_id,
-//         jb.fixer_id,
-//         u.username AS fixer_name,
-//         u.profilePicture
-//       FROM job_postings jp
-//       LEFT JOIN job_bids jb
-//         ON jb.job_posting_id = jp.id AND jb.status = 'accepted'
-//       LEFT JOIN users u
-//         ON jb.fixer_id = u.id
-//       WHERE jp.client_id = ? AND jp.status = 'in_progress'
-//       ORDER BY jp.created_at DESC;
-//     `;
-
-//     const [results] = await db.promise().query(query, [userId]);
-//     console.log(results);
-
-//     results.forEach((job) => {
-//       job.images = job.images ? JSON.parse(job.images) : [];
-//     });
-
-//     if (!results.length) {
-//       return res.status(404).json({ error: "No active jobs for this user." });
-//     }
-
-//     res.status(200).json(results);
-//   } catch (error) {
-//     console.error("Error fetching active job postings:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// };
 
 const rateFixer = async (req, res) => {
   try {

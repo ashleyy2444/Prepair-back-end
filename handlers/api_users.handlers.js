@@ -26,6 +26,9 @@ const transporter = nodemailer.createTransport({
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
+  tls: {
+    rejectUnauthorized: false,
+  },
 });
 
 require("dotenv").config();
@@ -204,8 +207,8 @@ async function updateUserProfileImpl(req, res) {
       graduationYear,
       previousRole,
       duration,
-      newPassword, 
-      profilePicture, 
+      newPassword,
+      profilePicture,
     } = req.body;
 
     // Fetch existing user
@@ -214,7 +217,7 @@ async function updateUserProfileImpl(req, res) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    let newProfilePictureUrl = profilePicture || null; 
+    let newProfilePictureUrl = profilePicture || null;
 
     // Hash the new password if provided
     let hashedPassword = existingUser.password;
@@ -237,7 +240,7 @@ async function updateUserProfileImpl(req, res) {
       graduationYear: graduationYear || null,
       previousRole,
       duration,
-      profilePicture: newProfilePictureUrl, 
+      profilePicture: newProfilePictureUrl,
       password: hashedPassword,
     };
 
@@ -414,7 +417,9 @@ async function getFixerWithRating(req, res) {
         [fixerId]
       );
 
-    fixer.avgRating = reviews[0].avgRating ? Number(reviews[0].avgRating).toFixed(1) : null;
+    fixer.avgRating = reviews[0].avgRating
+      ? Number(reviews[0].avgRating).toFixed(1)
+      : null;
     fixer.reviewCount = reviews[0].reviewCount || 0;
 
     res.json(fixer);
@@ -423,7 +428,6 @@ async function getFixerWithRating(req, res) {
     res.status(500).json({ error: "Internal server error" });
   }
 }
-
 
 // Export all functions
 module.exports = {
@@ -440,5 +444,5 @@ module.exports = {
   validateTargetUser,
   startUp,
   getAllFixers,
-  getFixerWithRating
+  getFixerWithRating,
 };
